@@ -1145,10 +1145,13 @@ public static unsafe partial class ClassInjector
         return fullName.ToString();
     }
 
+    public static Dictionary<string, Type> CustomTypeResolver = new();
+
     internal static Type SystemTypeFromIl2CppType(Il2CppTypeStruct* typePointer)
     {
         var fullName = GetIl2CppTypeFullName(typePointer);
-        var type = Type.GetType(fullName) ?? throw new NullReferenceException($"Couldn't find System.Type for Il2Cpp type: {fullName}");
+        if (!CustomTypeResolver.TryGetValue(fullName, out var type))
+            type = Type.GetType(fullName) ?? throw new NullReferenceException($"Couldn't find System.Type for Il2Cpp type: {fullName}");
 
         INativeTypeStruct wrappedType = UnityVersionHandler.Wrap(typePointer);
         if (wrappedType.Type == Il2CppTypeEnum.IL2CPP_TYPE_GENERICINST)

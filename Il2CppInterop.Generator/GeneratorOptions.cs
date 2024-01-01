@@ -1,6 +1,8 @@
 using System.IO.Compression;
 using System.Text;
 using System.Text.RegularExpressions;
+using Il2CppInterop.Generator.Contexts;
+using Il2CppInterop.Generator.Passes;
 using Mono.Cecil;
 
 namespace Il2CppInterop.Generator;
@@ -30,6 +32,8 @@ public class GeneratorOptions
 
     public List<string> DeobfuscationGenerationAssemblies { get; } = new();
     public string? DeobfuscationNewAssembliesPath { get; set; }
+
+    public List<ICustomPass> CustomPasses { get; } = new();
 
     /// <summary>
     ///     Reads a rename map from the specified name into the specified instance of options
@@ -62,6 +66,11 @@ public class GeneratorOptions
             if (split.Length < 2) continue;
             RenameMap[split[0]] = split[1];
         }
+    }
+
+    public void AddPass<T>() where T : ICustomPass, new()
+    {
+        CustomPasses.Add(new T());
     }
 
     public enum PrefixMode

@@ -194,6 +194,14 @@ internal class InteropAssemblyGeneratorRunner : IRunner
             Pass89GenerateMethodXrefCache.DoPass(rewriteContext, options);
         }
 
+        foreach (var pass in options.CustomPasses)
+        {
+            using(new TimingCookie("Custom Pass: " + pass.GetType().Name))
+            {
+                pass.DoPass(rewriteContext);
+            }
+        }
+
         using (new TimingCookie("Writing assemblies"))
         {
             Pass90WriteToDisk.DoPass(rewriteContext, options);

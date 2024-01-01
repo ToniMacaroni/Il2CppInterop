@@ -18,7 +18,7 @@ using Void = Il2CppSystem.Void;
 
 namespace Il2CppInterop.HarmonySupport;
 
-internal unsafe class Il2CppDetourMethodPatcher : MethodPatcher
+public unsafe class Il2CppDetourMethodPatcher : MethodPatcher
 {
     private static readonly MethodInfo IL2CPPToManagedStringMethodInfo
         = AccessTools.Method(typeof(IL2CPP),
@@ -56,12 +56,12 @@ internal unsafe class Il2CppDetourMethodPatcher : MethodPatcher
         [typeof(double)] = OpCodes.Stind_R8
     };
 
-    private static readonly List<object> DelegateCache = new();
-    private INativeMethodInfoStruct modifiedNativeMethodInfo;
+    protected static readonly List<object> DelegateCache = new();
+    protected INativeMethodInfoStruct modifiedNativeMethodInfo;
 
-    private IDetour nativeDetour;
+    protected IDetour nativeDetour;
 
-    private INativeMethodInfoStruct originalNativeMethodInfo;
+    protected INativeMethodInfoStruct originalNativeMethodInfo;
 
     /// <summary>
     ///     Constructs a new instance of <see cref="MonoMod.RuntimeDetour.NativeDetour" /> method patcher.
@@ -206,7 +206,7 @@ internal unsafe class Il2CppDetourMethodPatcher : MethodPatcher
         return true;
     }
 
-    private DynamicMethodDefinition GenerateNativeToManagedTrampoline(MethodInfo targetManagedMethodInfo)
+    protected DynamicMethodDefinition GenerateNativeToManagedTrampoline(MethodInfo targetManagedMethodInfo)
     {
         // managedParams are the interop types used on the managed side
         // unmanagedParams are IntPtr references that are used by IL2CPP compiled assembly
