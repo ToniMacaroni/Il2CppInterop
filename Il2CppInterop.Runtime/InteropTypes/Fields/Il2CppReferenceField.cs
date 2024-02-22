@@ -10,6 +10,8 @@ public unsafe class Il2CppReferenceField<TRefObj> where TRefObj : Il2CppObjectBa
 
     private readonly Il2CppObjectBase _obj;
 
+    private TRefObj _cachedValue;
+
     internal Il2CppReferenceField(Il2CppObjectBase obj, string fieldName)
     {
         _obj = obj;
@@ -20,6 +22,13 @@ public unsafe class Il2CppReferenceField<TRefObj> where TRefObj : Il2CppObjectBa
     {
         get => Get();
         set => Set(value);
+    }
+
+    public TRefObj CachedValue => _cachedValue;
+
+    public void Cache()
+    {
+        _cachedValue = Get();
     }
 
     public TRefObj? Get()
@@ -41,7 +50,9 @@ public unsafe class Il2CppReferenceField<TRefObj> where TRefObj : Il2CppObjectBa
 
     public static implicit operator TRefObj(Il2CppReferenceField<TRefObj> _this)
     {
-        return _this.Get();
+        if(_this._cachedValue == null)
+            _this.Cache();
+        return _this._cachedValue;
     }
 
     public static implicit operator Il2CppReferenceField<TRefObj>(TRefObj _)
