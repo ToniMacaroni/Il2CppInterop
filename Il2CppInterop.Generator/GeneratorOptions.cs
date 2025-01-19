@@ -1,9 +1,7 @@
 using System.IO.Compression;
 using System.Text;
 using System.Text.RegularExpressions;
-using Il2CppInterop.Generator.Contexts;
-using Il2CppInterop.Generator.Passes;
-using Mono.Cecil;
+using AsmResolver.DotNet;
 
 namespace Il2CppInterop.Generator;
 
