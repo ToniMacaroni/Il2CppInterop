@@ -5,11 +5,8 @@ namespace Il2CppInterop.Runtime.InteropTypes.Fields;
 
 public unsafe class Il2CppReferenceField<TRefObj> where TRefObj : Il2CppObjectBase
 {
-    private static bool? isInjectedType;
     private readonly IntPtr _fieldPtr;
-
     private readonly Il2CppObjectBase _obj;
-
     private TRefObj _cachedValue;
 
     internal Il2CppReferenceField(Il2CppObjectBase obj, string fieldName)
@@ -26,26 +23,20 @@ public unsafe class Il2CppReferenceField<TRefObj> where TRefObj : Il2CppObjectBa
 
     public TRefObj CachedValue => _cachedValue;
 
-    public void Cache()
-    {
-        _cachedValue = Get();
-    }
-
     public TRefObj? Get()
     {
         var ptr = *GetPointerToData();
-        if (ptr == IntPtr.Zero) return null;
-        if (isInjectedType == null)
-            isInjectedType = RuntimeSpecificsStore.IsInjected(Il2CppClassPointerStore<TRefObj>.NativeClassPtr);
-
-        if (isInjectedType.Value && ClassInjectorBase.GetMonoObjectFromIl2CppPointer(ptr) is TRefObj monoObject)
-            return monoObject;
-        return (TRefObj)Activator.CreateInstance(typeof(TRefObj), ptr);
+        return ptr == IntPtr.Zero ? null : Il2CppObjectPool.Get<TRefObj>(ptr);
     }
 
     public void Set(TRefObj value)
     {
         *GetPointerToData() = value != null ? value.Pointer : IntPtr.Zero;
+    }
+
+    public void Cache()
+    {
+        _cachedValue = Get();
     }
 
     public static implicit operator TRefObj(Il2CppReferenceField<TRefObj> _this)

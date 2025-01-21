@@ -18,7 +18,7 @@ using Void = Il2CppSystem.Void;
 
 namespace Il2CppInterop.HarmonySupport;
 
-public unsafe class Il2CppDetourMethodPatcher : MethodPatcher
+internal unsafe class Il2CppDetourMethodPatcher : MethodPatcher
 {
     private static readonly MethodInfo IL2CPPToManagedStringMethodInfo
         = AccessTools.Method(typeof(IL2CPP),
@@ -56,12 +56,12 @@ public unsafe class Il2CppDetourMethodPatcher : MethodPatcher
         [typeof(double)] = OpCodes.Stind_R8
     };
 
-    protected static readonly List<object> DelegateCache = new();
-    protected INativeMethodInfoStruct modifiedNativeMethodInfo;
+    private static readonly List<object> DelegateCache = new();
+    private INativeMethodInfoStruct modifiedNativeMethodInfo;
 
-    protected IDetour nativeDetour;
+    private IDetour nativeDetour;
 
-    protected INativeMethodInfoStruct originalNativeMethodInfo;
+    private INativeMethodInfoStruct originalNativeMethodInfo;
 
     /// <summary>
     ///     Constructs a new instance of <see cref="MonoMod.RuntimeDetour.NativeDetour" /> method patcher.
@@ -206,7 +206,7 @@ public unsafe class Il2CppDetourMethodPatcher : MethodPatcher
         return true;
     }
 
-    protected DynamicMethodDefinition GenerateNativeToManagedTrampoline(MethodInfo targetManagedMethodInfo)
+    private DynamicMethodDefinition GenerateNativeToManagedTrampoline(MethodInfo targetManagedMethodInfo)
     {
         // managedParams are the interop types used on the managed side
         // unmanagedParams are IntPtr references that are used by IL2CPP compiled assembly
@@ -405,7 +405,7 @@ public unsafe class Il2CppDetourMethodPatcher : MethodPatcher
             il.Emit(OpCodes.Br_S, endLabel);
 
             il.MarkLabel(notNullLabel);
-            il.Emit(OpCodes.Newobj, AccessTools.DeclaredConstructor(originalType, new[] { typeof(IntPtr) }));
+            il.Emit(OpCodes.Call, AccessTools.Method(typeof(Il2CppObjectPool), nameof(Il2CppObjectPool.Get)).MakeGenericMethod(originalType));
 
             il.MarkLabel(endLabel);
         }

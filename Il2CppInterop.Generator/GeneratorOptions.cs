@@ -2,6 +2,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Text.RegularExpressions;
 using AsmResolver.DotNet;
+using Il2CppInterop.Generator.Passes;
 
 namespace Il2CppInterop.Generator;
 
